@@ -1,5 +1,7 @@
 import React from 'react';
-import NavBar from '@layouts/NavBar';
+import loadable from '@loadable/component';
+
+const NavBar = loadable(() => import('@layouts/NavBar'));
 
 const Workspace = () => {
   return (

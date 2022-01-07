@@ -1,7 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import Login from '@pages/Login';
-import Workspace from './Workspace';
+import loadable from '@loadable/component';
+
+const Login = loadable(() => import('@pages/Login'));
+const Workspace = loadable(() => import('@layouts/Workspace'));
 
 const App = () => {
   return (
