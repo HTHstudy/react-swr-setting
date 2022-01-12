@@ -3,7 +3,7 @@ import MaterialTable from 'material-table';
 
 const MTable = () => {
   return (
-    <div style={{ maxWidth: '100%' }}>
+    // <div style={{ maxWidth: '100%' }}>
       <MaterialTable
         title="Basic Selection Preview"
         columns={[
@@ -26,10 +26,11 @@ const MTable = () => {
           selection: true,
           pageSize: 100,
           pageSizeOptions: [10, 50, 100],
-          // search: false,
+          search: true,
+          exportButton: true,
         }}
       />
-    </div>
+    // </div>
   );
 };
 

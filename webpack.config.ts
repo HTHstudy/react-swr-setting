@@ -2,6 +2,7 @@ import path from 'path';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import webpack, { Configuration as WebpackConfiguration } from 'webpack';
 import { Configuration as WebpackDevServerConfiguration } from 'webpack-dev-server';
+import Dotenv from 'dotenv-webpack';
 
 interface Configuration extends WebpackConfiguration {
   devServer?: WebpackDevServerConfiguration;
@@ -39,9 +40,12 @@ const config: Configuration = {
           presets: [
             [
               '@babel/preset-env',
+
               {
-                targets: { browsers: ['IE 10'] },
-                debug: isDevelopment,
+                targets: { browsers: ['last 2 versions', 'ie >= 11'] },
+
+                useBuiltIns: 'usage',
+                corejs: 3,
               },
             ],
             '@babel/preset-react',
@@ -71,7 +75,12 @@ const config: Configuration = {
       //   files: "./src/**/*",
       // },
     }),
-    new webpack.EnvironmentPlugin({ NODE_ENV: isDevelopment ? 'development' : 'production' }),
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: isDevelopment ? 'development' : 'production',
+    }),
+    new Dotenv({
+      path: './.env',
+    }),
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -87,7 +96,6 @@ const config: Configuration = {
 };
 
 if (isDevelopment && config.plugins) {
-  // config.plugins.push(new webpack.HotModuleReplacementPlugin());
   config.plugins.push(
     new ReactRefreshWebpackPlugin({
       overlay: {

@@ -13,5 +13,3 @@ export const useText = () => {
 
   return { text: data || INITIAL_DATA, setText: mutate };
 };
-
-export default useText;
