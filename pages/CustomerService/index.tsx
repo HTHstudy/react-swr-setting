@@ -1,29 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import MaterialTable, { Column } from 'material-table';
-import { ConsultType } from '@typings/global';
-import useConsultData from './useConsultData';
+import useConsultData, { ConsultRowdata } from './useConsultData';
 import Api from '@utils/Api';
 
-interface TableData {
-  id: number;
-  editing: any;
-}
-interface RowData extends ConsultType {
-  tableData?: TableData;
-}
-
 const CustomerService = () => {
-  const [columns, setColumns] = useState<Column<RowData>[]>();
+  const [columns, setColumns] = useState<Column<ConsultRowdata>[]>();
 
   const { consultData, setConsultData } = useConsultData();
 
   useEffect(() => {
     if (!consultData) return;
+    const { consultLookup, locationLookup } = consultData;
+    
     setColumns([
       {
         title: '구분',
         field: 'status',
-        lookup: consultData.consultLookup,
+        lookup: consultLookup,
         editable: 'onUpdate',
       },
       { title: '일자', field: 'registDate', type: 'date', editable: 'never' },
@@ -37,7 +30,7 @@ const CustomerService = () => {
       {
         title: '희망지역',
         field: 'wishSpot',
-        lookup: consultData.locationLookup,
+        lookup: locationLookup,
       },
       { title: '문의내용', field: 'content', type: 'string' },
     ]);

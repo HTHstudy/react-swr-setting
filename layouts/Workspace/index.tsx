@@ -56,7 +56,7 @@ const Workspace = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(4);
   const { menuList } = useMenuList();
   const { setToken } = useToken();
 
