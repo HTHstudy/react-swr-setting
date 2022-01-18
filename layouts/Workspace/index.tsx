@@ -58,11 +58,11 @@ const Workspace = () => {
   const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState(4);
   const { menuList } = useMenuList();
-  const { setToken } = useToken();
+
+  const API = Api();
 
   const logoutHandler = () => {
-    Api.logout();
-    setToken();
+    API.logout();
   };
 
   const handleDrawerOpen = () => {

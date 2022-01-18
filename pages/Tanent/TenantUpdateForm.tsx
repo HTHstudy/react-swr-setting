@@ -20,6 +20,7 @@ type TenantRegistFormProps = {
 export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormProps) {
   const classes = useStyles();
   const { setTenantData } = useTenantData();
+  const API = Api();
 
   const [spotOptions, setSpotOptions] = useState<AutoCompleteOptionType<number>[]>();
   const [roomOptions, setRoomOptions] = useState<AutoCompleteOptionType<number>[]>();
@@ -52,14 +53,14 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
   const [businessName, setBusinessName] = useState<string>(rowData.businessName);
 
   const getSpotOption = async () => {
-    const spotList = await Api.getSpotList();
+    const spotList = await API.getSpotList();
     const _options = spotList?.map((spot) => {
       return { value: spot.spotId, name: spot.spotName };
     });
     setSpotOptions(_options);
   };
   const getRoomOption = async (spotId: number) => {
-    const roomList = await Api.getRoomList(spotId);
+    const roomList = await API.getRoomList(spotId);
 
     const _options = roomList?.map((room) => {
       return { value: room.roomId, name: room.roomName };
@@ -67,7 +68,7 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
     setRoomOptions(_options);
   };
   const getCompanyOption = async () => {
-    const companyCodeList = await Api.getCode('COMPANY_CODE');
+    const companyCodeList = await API.getCode('COMPANY_CODE');
 
     const _options = companyCodeList?.map((company) => {
       return { value: company.code, name: company.codeName };
@@ -76,7 +77,7 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
   };
 
   const getPayTypeOption = async () => {
-    const payTypeCodeList = await Api.getCode('PAYTYPE_CODE');
+    const payTypeCodeList = await API.getCode('PAYTYPE_CODE');
 
     const _options = payTypeCodeList?.map((payType) => {
       return { value: payType.code, label: payType.codeName };
@@ -123,7 +124,7 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
         identify,
         businessName,
       };
-      await Api.updateTenantData(body);
+      await API.updateTenantData(body);
       setTenantData();
       onClose();
     } else {

@@ -11,7 +11,8 @@ export interface ConsultRowdata extends ConsultType {
 }
 
 function useConsultData() {
-  const { data, error, mutate } = useSWR(`/api/consult`, Api.getConsultData);
+  const API = Api();
+  const { data, error, mutate } = useSWR(`/api/consult`, API.getConsultData);
 
   return {
     consultData: data,

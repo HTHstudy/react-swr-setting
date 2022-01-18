@@ -2,29 +2,16 @@ import React, { useEffect, useState } from 'react';
 import MaterialTable, { Column } from 'material-table';
 import useConsultData, { ConsultRowdata } from './useConsultData';
 import Api from '@utils/Api';
-import { useToken } from '@store';
 
 const CustomerService = () => {
   const [columns, setColumns] = useState<Column<ConsultRowdata>[]>();
   const { consultData, setConsultData, isError } = useConsultData();
-  const { setToken } = useToken();
 
-  const logoutHandler = () => {
-    alert('세션이 만료 되었습니다.');
-    Api.logout();
-    setToken();
-  };
+  const API = Api();
 
   useEffect(() => {
-    // console.log('consultData', consultData);
     if (!consultData) return;
-    // if (consultData.code === '441') {
-    //   console.log('441이라서 로그아웃');
-    //   logoutHandler();
-    //   return;
-    // }
     const { consultLookup, locationLookup } = consultData;
-
     setColumns([
       {
         title: '구분',
@@ -65,7 +52,7 @@ const CustomerService = () => {
                   phone: newData.phone,
                   content: newData.content,
                 };
-                await Api.registConsultData(newConsult);
+                await API.registConsultData(newConsult);
                 setConsultData();
               } catch (err) {
                 alert('등록에 실패 했습니다.');
@@ -81,7 +68,7 @@ const CustomerService = () => {
                   phone: newData.phone,
                   content: newData.content,
                 };
-                await Api.updateConsultData(newConsult);
+                await API.updateConsultData(newConsult);
                 setConsultData();
               } catch (err) {
                 alert('수정에 실패 했습니다.');

@@ -7,12 +7,7 @@ const Login = loadable(() => import('@pages/Login'));
 const Workspace = loadable(() => import('@layouts/Workspace'));
 
 const App = () => {
-  const { token, setToken } = useToken();
-  // useEffect(() => {
-  //   console.log('token', token);
-  //   // setToken(undefined);
-  //   // setToken();
-  // }, [token]);
+  const { token } = useToken();
 
   if (!token) return <Login />;
   return (

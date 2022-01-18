@@ -11,6 +11,7 @@ import {
   TenantInput,
   TenantUpdateInput,
 } from '@typings/global';
+import { useToken } from '@store';
 
 interface CustomResponse<ResultType> {
   code: string;
@@ -22,8 +23,12 @@ const $axios = axios.create({
   baseURL: process.env.API_URL,
 });
 
-const Api = {
-  login: async (email: string, password: string) => {
+const Api = () => {
+  const { setToken } = useToken();
+  const token = localStorage.getItem('token');
+  if (token) $axios.defaults.headers.common['Authorization'] = token;
+
+  const login = async (email: string, password: string) => {
     const response = await $axios.post<CustomResponse<LoginType>>('/user/signin', { email, password });
     const { result } = response.data;
 
@@ -31,20 +36,17 @@ const Api = {
       localStorage.setItem('token', result.token);
       localStorage.setItem('menuList', JSON.stringify(result.menuList));
       localStorage.setItem('companyList', JSON.stringify(result.companyList));
-
-      return response;
+      setToken();
+      return;
     }
     alert(response.data.message);
-  },
-  logout: async () => {
+  };
+  const logout = async () => {
     localStorage.clear();
-  },
-  addToken: () => {
-    const token = localStorage.getItem('token');
-    if (token) $axios.defaults.headers.common['Authorization'] = token;
-  },
-  updateTenantData: async (body: TenantUpdateInput) => {
-    Api.addToken();
+    setToken();
+  };
+
+  const updateTenantData = async (body: TenantUpdateInput) => {
     const response = await $axios.post<CustomResponse<TenantType[]>>('/tenant/update', body);
 
     if (response.data.code === '200') {
@@ -52,9 +54,8 @@ const Api = {
       return;
     }
     alert(response.data.message);
-  },
-  registTenantData: async (body: TenantInput) => {
-    Api.addToken();
+  };
+  const registTenantData = async (body: TenantInput) => {
     const response = await $axios.post<CustomResponse<TenantType[]>>('/tenant/regist', body);
 
     if (response.data.code === '200') {
@@ -62,17 +63,16 @@ const Api = {
       return;
     }
     alert(response.data.message);
-  },
-  getTenantData: async () => {
-    Api.addToken();
+  };
+  const getTenantData = async () => {
     const companyList = localStorage.getItem('companyList');
     const response = await $axios.post<CustomResponse<TenantType[]>>(
       '/tenant/list',
       companyList ? { companyList: JSON.parse(companyList) } : { companyList: [null] },
     );
 
-    const spotList = await Api.getSpotList();
-    const companyCodeList = await Api.getCode('COMPANY_CODE');
+    const spotList = await getSpotList();
+    const companyCodeList = await getCode('COMPANY_CODE');
 
     const valid = response.data.code === '200' && spotList && companyCodeList;
 
@@ -89,30 +89,27 @@ const Api = {
 
       return { list, spotLookup, companyLookup };
     }
-  },
-  updateConsultData: async (newConsult: UpdateConsultType) => {
-    Api.addToken();
+  };
+  const updateConsultData = async (newConsult: UpdateConsultType) => {
     const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/update', newConsult);
 
     if (response.data.code === '200') alert('수정에 성공했습니다.');
-  },
-  registConsultData: async (newConsult: RegistConsultType) => {
-    Api.addToken();
+  };
+  const registConsultData = async (newConsult: RegistConsultType) => {
     const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/regist', newConsult);
 
     if (response.data.code === '200') alert('등록에 성공했습니다.');
-  },
-  getConsultData: async () => {
-    Api.addToken();
+  };
+  const getConsultData = async () => {
     const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/list', null);
-    const ConsultCodeList = await Api.getCode('CONSULT_STATUS');
-    const locationCodeList = await Api.getCode('LOCATION_CODE');
+    const ConsultCodeList = await getCode('CONSULT_STATUS');
+    const locationCodeList = await getCode('LOCATION_CODE');
     console.log(response);
 
-    // if (response.data.code === '441') {
-    //   alert('세션이 만료 되었습니다.');
-    //   Api.logout();
-    // }
+    if (response.data.code === '441') {
+      alert('세션이 만료 되었습니다.');
+      logout();
+    }
 
     const valid = response.data.code === '200' && locationCodeList && ConsultCodeList;
 
@@ -130,8 +127,8 @@ const Api = {
 
       return { list, consultLookup, locationLookup };
     }
-  },
-  getCode: async (code: string) => {
+  };
+  const getCode = async (code: string) => {
     const response = await $axios.get<CustomResponse<CodeType[]>>(`/cmm/code-list/${code}`);
 
     if (response.data.code === '200') {
@@ -139,8 +136,8 @@ const Api = {
       return codeList;
     }
     alert(response.data.message);
-  },
-  getSpotList: async () => {
+  };
+  const getSpotList = async () => {
     const response = await $axios.post<CustomResponse<SpotType[]>>('/spot/list');
 
     if (response.data.code === '200') {
@@ -148,8 +145,8 @@ const Api = {
       return spotList;
     }
     alert(response.data.message);
-  },
-  getRoomList: async (spotId: number) => {
+  };
+  const getRoomList = async (spotId: number) => {
     const response = await $axios.post<CustomResponse<RoomType[]>>('/room/list', { spotId });
 
     if (response.data.code === '200') {
@@ -157,7 +154,20 @@ const Api = {
       return roomList;
     }
     alert(response.data.message);
-  },
+  };
+  return {
+    login,
+    logout,
+    updateTenantData,
+    registTenantData,
+    getTenantData,
+    updateConsultData,
+    registConsultData,
+    getConsultData,
+    getCode,
+    getSpotList,
+    getRoomList,
+  };
 };
 
 export default Api;

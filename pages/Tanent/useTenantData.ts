@@ -11,7 +11,8 @@ export interface TenantRowdata extends TenantType {
 }
 
 function useTenantData() {
-  const { data, error, mutate } = useSWR(`/api/tenant`, Api.getTenantData);
+  const API = Api();
+  const { data, error, mutate } = useSWR(`/api/tenant`, API.getTenantData);
 
   return {
     tenantData: data,

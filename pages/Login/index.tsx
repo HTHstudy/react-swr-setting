@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Login() {
   const classes = useStyles();
-  const { setToken } = useToken();
+  const API = Api();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -55,8 +55,7 @@ export default function Login() {
     const email = data.get('email') as string;
     const password = data.get('password') as string;
 
-    const result = await Api.login(email, password);
-    if (result) setToken();
+    await API.login(email, password);
   };
 
   return (
