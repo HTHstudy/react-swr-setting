@@ -49,12 +49,11 @@ export interface UpdateConsultType {
 
 export interface TenantType {
   // businessType: null;
-  // companyCode: string;
   // status: string;
-
+  companyCode: string;
   tenantId: number;
   spotId: number;
-  roomId: string;
+  roomId: number;
   monthlyFee: number;
   area: string;
   startDate: string;
@@ -90,20 +89,24 @@ export interface TenantInput {
   roomId: number; //호수 번호
   monthlyFee: number; //월 이용료
   startDate: string; //계약 시작일
-  endDate: number; //계약 만료일
-  payment: number; //결제 금액
+  endDate?: number; //계약 만료일
+  payment?: number; //결제 금액
   paymentType: string; //결제 방법
-  account: number; //결제 계좌번호
-  userName: string; //성명
-  identify: string; //사업자 번호
+  account?: number; //결제 계좌번호
+  userName?: string; //성명
+  identify?: string; //사업자 번호
   phone: string; //전화번호
-  lastPayDay: string; //마지막 결제일
-  remark: string; //비고
-  businessName: string; //사업체 명
-  taxBillEmail: string; //세금계산서 이메일
-  content: string; //내용
-  renewalDate: string; //계약 갱신일
+  lastPayDay?: string; //마지막 결제일
+  remark?: string; //비고
+  businessName?: string; //사업체 명
+  taxBillEmail?: string; //세금계산서 이메일
+  content?: string; //내용
+  renewalDate?: string; //계약 갱신일
   extendMonth: number; //연장 계약
+  companyCode: string; // 담당 업체
+}
+export interface TenantUpdateInput extends TenantInput {
+  tenantId: number;
 }
 
 export interface SpotType {

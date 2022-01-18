@@ -2,16 +2,29 @@ import React, { useEffect, useState } from 'react';
 import MaterialTable, { Column } from 'material-table';
 import useConsultData, { ConsultRowdata } from './useConsultData';
 import Api from '@utils/Api';
+import { useToken } from '@store';
 
 const CustomerService = () => {
   const [columns, setColumns] = useState<Column<ConsultRowdata>[]>();
+  const { consultData, setConsultData, isError } = useConsultData();
+  const { setToken } = useToken();
 
-  const { consultData, setConsultData } = useConsultData();
+  const logoutHandler = () => {
+    alert('세션이 만료 되었습니다.');
+    Api.logout();
+    setToken();
+  };
 
   useEffect(() => {
+    // console.log('consultData', consultData);
     if (!consultData) return;
+    // if (consultData.code === '441') {
+    //   console.log('441이라서 로그아웃');
+    //   logoutHandler();
+    //   return;
+    // }
     const { consultLookup, locationLookup } = consultData;
-    
+
     setColumns([
       {
         title: '구분',
@@ -38,7 +51,7 @@ const CustomerService = () => {
 
   return (
     <div>
-      {consultData && columns && (
+      {consultData?.list && columns && (
         <MaterialTable
           title="문의 테이블"
           columns={columns}

@@ -5,34 +5,51 @@ import { Button, IconButton, MenuItem, TextField } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
 import MyAutoComplete, { AutoCompleteOptionType } from '@components/MyAutoComplete';
 import useTenantData from './useTenantData';
+import { TenantType } from '@typings/global';
+
+type SelectOption = {
+  value: string;
+  label: string;
+};
 
 type TenantRegistFormProps = {
+  rowData: TenantType;
   onClose: () => void;
 };
 
-export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
+export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormProps) {
   const classes = useStyles();
   const { setTenantData } = useTenantData();
 
   const [spotOptions, setSpotOptions] = useState<AutoCompleteOptionType<number>[]>();
   const [roomOptions, setRoomOptions] = useState<AutoCompleteOptionType<number>[]>();
   const [compnayOptions, setCompanyOptions] = useState<AutoCompleteOptionType<string>[]>();
-  const [payTypeOptions, setPayTypeOptions] = useState<{ value: string; label: string }[]>();
+  const [payTypeOptions, setPayTypeOptions] = useState<SelectOption[]>();
 
-  const [userName, setUserName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
-  const [paymentType, setPaymentType] = useState<string>('');
+  const [userName, setUserName] = useState<string>(rowData.userName);
+  const [phone, setPhone] = useState<string>(rowData.phone);
+  const [paymentType, setPaymentType] = useState<string>(rowData.paymentType);
 
-  const [companyValue, setCompanyValue] = useState<AutoCompleteOptionType<string>>();
-  const [spotValue, setSpotValue] = useState<AutoCompleteOptionType<number>>();
-  const [roomValue, setRoomValue] = useState<AutoCompleteOptionType<number>>();
+  const [companyValue, setCompanyValue] = useState<AutoCompleteOptionType<string> | undefined>({
+    value: rowData.companyCode,
+    name: rowData.companyName,
+  });
+  const [spotValue, setSpotValue] = useState<AutoCompleteOptionType<number> | undefined>({
+    value: rowData.spotId,
+    name: rowData.spotName,
+  });
+  const [fakeRoomValue] = useState<AutoCompleteOptionType<number>>({
+    value: rowData.roomId,
+    name: rowData.roomName,
+  });
+  const [roomValue, setRoomValue] = useState<AutoCompleteOptionType<number> | undefined>();
 
-  const [monthlyFee, setMonthlyFee] = useState<string>('');
-  const [extendMonth, setExtendMonth] = useState<string>('');
-  const [startDate, setStartDate] = useState<string>('');
+  const [monthlyFee, setMonthlyFee] = useState<string>(String(rowData.monthlyFee));
+  const [extendMonth, setExtendMonth] = useState<string>(String(rowData.extendMonth));
+  const [startDate, setStartDate] = useState<string>(rowData.startDate);
 
-  const [identify, setIdentify] = useState<string>('');
-  const [businessName, setBusinessName] = useState<string>('');
+  const [identify, setIdentify] = useState<string>(rowData.identify);
+  const [businessName, setBusinessName] = useState<string>(rowData.businessName);
 
   const getSpotOption = async () => {
     const spotList = await Api.getSpotList();
@@ -70,8 +87,9 @@ export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
   useEffect(() => {
     setRoomValue(undefined);
     if (!spotValue) return;
+
     const spotId = spotValue.value;
-    getRoomOption(spotId);
+    getRoomOption(spotId as number);
   }, [spotValue]);
 
   useEffect(() => {
@@ -90,31 +108,22 @@ export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
   }, []);
 
   const handleSubmit = async () => {
-    if (
-      userName &&
-      phone &&
-      paymentType &&
-      companyValue &&
-      spotValue &&
-      roomValue &&
-      monthlyFee &&
-      extendMonth &&
-      startDate
-    ) {
+    if (userName && phone && paymentType && companyValue && spotValue && monthlyFee && extendMonth && startDate) {
       const body = {
+        tenantId: rowData.tenantId,
         userName,
         phone,
         paymentType,
         companyCode: companyValue.value,
         spotId: spotValue.value,
-        roomId: roomValue.value,
+        roomId: roomValue ? roomValue.value : fakeRoomValue.value,
         monthlyFee: Number(monthlyFee),
         extendMonth: Number(extendMonth),
         startDate,
         identify,
         businessName,
       };
-      await Api.registTenantData(body);
+      await Api.updateTenantData(body);
       setTenantData();
       onClose();
     } else {
@@ -125,7 +134,7 @@ export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
   return (
     <div className={classes.root}>
       <div className={classes.titleGrid}>
-        <h1>계약 생성</h1>
+        <h1>계약 수정</h1>
         <IconButton onClick={onClose} color="secondary" aria-label="close">
           <CloseIcon />
         </IconButton>
@@ -147,26 +156,35 @@ export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
           variant="outlined"
           required
         />
-        <TextField
-          select
-          fullWidth
-          value={paymentType}
-          onChange={(event) => setPaymentType(event.target.value)}
-          variant="outlined"
-          required
-          label="결제타입"
-        >
-          {payTypeOptions?.map((option: any) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </TextField>
+        {payTypeOptions && (
+          <TextField
+            select
+            fullWidth
+            value={paymentType}
+            onChange={(event) => {
+              setPaymentType(event.target.value);
+            }}
+            variant="outlined"
+            required
+            label="결제타입"
+          >
+            {payTypeOptions.map((option: SelectOption) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
       </div>
       <div className={classes.myGrid}>
         <MyAutoComplete options={compnayOptions} value={companyValue} setValue={setCompanyValue} label="담당업체 *" />
         <MyAutoComplete options={spotOptions} value={spotValue} setValue={setSpotValue} label="지점 *" />
-        <MyAutoComplete options={roomOptions} value={roomValue} setValue={setRoomValue} label="호수 *" />
+        <MyAutoComplete
+          options={roomOptions}
+          value={roomValue ? roomValue : fakeRoomValue}
+          setValue={setRoomValue}
+          label="호수 *"
+        />
       </div>
       <div className={classes.myGrid}>
         <TextField
@@ -219,7 +237,7 @@ export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
         <TextField style={{ visibility: 'hidden' }} fullWidth />
       </div>
       <Button color="primary" variant="contained" onClick={handleSubmit}>
-        제출
+        수정 요청
       </Button>
     </div>
   );
