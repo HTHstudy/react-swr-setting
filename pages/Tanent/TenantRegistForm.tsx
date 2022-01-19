@@ -70,6 +70,9 @@ export default function TenantRegistForm({ onClose }: TenantRegistFormProps) {
 
   useEffect(() => {
     setRoomValue(undefined);
+  }, [roomOptions]);
+
+  useEffect(() => {
     if (!spotValue) return;
     const spotId = spotValue.value;
     getRoomOption(spotId);

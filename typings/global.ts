@@ -117,3 +117,17 @@ export interface RoomType {
   roomId: number;
   roomName: string;
 }
+
+export interface userInfoType {
+  compList: string;
+  email: string;
+  lastAccessDate: string;
+  menuList: string;
+  userId: number;
+  userName: string;
+}
+
+export interface GetMenuListType {
+  menuName: string;
+  menuId: number;
+}

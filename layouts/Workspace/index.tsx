@@ -55,8 +55,8 @@ const drawerWidth = 240;
 const Workspace = () => {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = useState(true);
-  const [selected, setSelected] = useState(4);
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(1);
   const { menuList } = useMenuList();
 
   const API = Api();

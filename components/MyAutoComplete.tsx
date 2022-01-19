@@ -8,7 +8,7 @@ export interface AutoCompleteOptionType<T> {
 }
 type PropsType<T> = {
   value: any;
-  setValue: React.Dispatch<React.SetStateAction<AutoCompleteOptionType<T> | undefined>>;
+  setValue: (value: AutoCompleteOptionType<T>) => void;
   options: AutoCompleteOptionType<T>[] | undefined;
   label: string;
   disabled?: boolean;
@@ -19,7 +19,8 @@ export default function MyAutoComplete<T>({ value, setValue, options, label, dis
     <Autocomplete
       disabled={disabled}
       fullWidth
-      value={value}
+      disableClearable
+      value={value ? value : null}
       onChange={(event: any, newValue: any) => setValue(newValue)}
       options={options ? options : []}
       getOptionLabel={(option) => option.name}

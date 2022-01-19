@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Api from '@utils/Api';
 import { Button, IconButton, MenuItem, TextField } from '@material-ui/core';
@@ -39,7 +39,8 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
     value: rowData.spotId,
     name: rowData.spotName,
   });
-  const [fakeRoomValue] = useState<AutoCompleteOptionType<number>>({
+
+  const initalRoomValue = useRef<AutoCompleteOptionType<number> | undefined>({
     value: rowData.roomId,
     name: rowData.roomName,
   });
@@ -51,6 +52,11 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
 
   const [identify, setIdentify] = useState<string>(rowData.identify);
   const [businessName, setBusinessName] = useState<string>(rowData.businessName);
+
+  const setSpot = (value: AutoCompleteOptionType<number>) => {
+    if (initalRoomValue.current) initalRoomValue.current = undefined;
+    setSpotValue(value);
+  };
 
   const getSpotOption = async () => {
     const spotList = await API.getSpotList();
@@ -86,11 +92,17 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
   };
 
   useEffect(() => {
+    if (initalRoomValue.current) {
+      setRoomValue(initalRoomValue.current);
+      return;
+    }
     setRoomValue(undefined);
-    if (!spotValue) return;
+  }, [roomOptions]);
 
+  useEffect(() => {
+    if (!spotValue) return;
     const spotId = spotValue.value;
-    getRoomOption(spotId as number);
+    getRoomOption(spotId);
   }, [spotValue]);
 
   useEffect(() => {
@@ -109,7 +121,17 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
   }, []);
 
   const handleSubmit = async () => {
-    if (userName && phone && paymentType && companyValue && spotValue && monthlyFee && extendMonth && startDate) {
+    if (
+      userName &&
+      phone &&
+      paymentType &&
+      companyValue &&
+      spotValue &&
+      roomValue &&
+      monthlyFee &&
+      extendMonth &&
+      startDate
+    ) {
       const body = {
         tenantId: rowData.tenantId,
         userName,
@@ -117,7 +139,7 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
         paymentType,
         companyCode: companyValue.value,
         spotId: spotValue.value,
-        roomId: roomValue ? roomValue.value : fakeRoomValue.value,
+        roomId: roomValue.value,
         monthlyFee: Number(monthlyFee),
         extendMonth: Number(extendMonth),
         startDate,
@@ -179,13 +201,8 @@ export default function TenantUpdateForm({ rowData, onClose }: TenantRegistFormP
       </div>
       <div className={classes.myGrid}>
         <MyAutoComplete options={compnayOptions} value={companyValue} setValue={setCompanyValue} label="담당업체 *" />
-        <MyAutoComplete options={spotOptions} value={spotValue} setValue={setSpotValue} label="지점 *" />
-        <MyAutoComplete
-          options={roomOptions}
-          value={roomValue ? roomValue : fakeRoomValue}
-          setValue={setRoomValue}
-          label="호수 *"
-        />
+        <MyAutoComplete options={spotOptions} value={spotValue} setValue={setSpot} label="지점 *" />
+        <MyAutoComplete options={roomOptions} value={roomValue} setValue={setRoomValue} label="호수 *" />
       </div>
       <div className={classes.myGrid}>
         <TextField
