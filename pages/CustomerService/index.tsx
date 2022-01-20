@@ -5,7 +5,7 @@ import Api from '@utils/Api';
 
 const CustomerService = () => {
   const [columns, setColumns] = useState<Column<ConsultRowdata>[]>();
-  const { consultData, setConsultData, isError } = useConsultData();
+  const { consultData, setConsultData } = useConsultData();
 
   const API = Api();
 

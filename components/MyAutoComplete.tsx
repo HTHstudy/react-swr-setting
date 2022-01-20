@@ -7,7 +7,7 @@ export interface AutoCompleteOptionType<T> {
   name: string;
 }
 type PropsType<T> = {
-  value: any;
+  value?: AutoCompleteOptionType<T>;
   setValue: (value: AutoCompleteOptionType<T>) => void;
   options: AutoCompleteOptionType<T>[] | undefined;
   label: string;
@@ -20,7 +20,7 @@ export default function MyAutoComplete<T>({ value, setValue, options, label, dis
       disabled={disabled}
       fullWidth
       disableClearable
-      value={value ? value : null}
+      value={value ? value : (null as any)}
       onChange={(event: any, newValue: any) => setValue(newValue)}
       options={options ? options : []}
       getOptionLabel={(option) => option.name}

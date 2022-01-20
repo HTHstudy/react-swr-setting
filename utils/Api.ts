@@ -10,8 +10,10 @@ import {
   RoomType,
   TenantInput,
   TenantUpdateInput,
-  userInfoType,
+  UserInfoType,
   GetMenuListType,
+  SignUpType,
+  UserUpdateType,
 } from '@typings/global';
 import { useToken } from '@store';
 
@@ -145,16 +147,28 @@ const Api = () => {
     alert(response.data.message);
   };
   const getUserList = async () => {
-    const response = await $axios.post<CustomResponse<userInfoType[]>>('/user/list');
+    const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/list');
     if (response.data.code === '200') {
       return response.data.result;
     }
   };
   const getMenuList = async () => {
     const response = await $axios.post<CustomResponse<GetMenuListType[]>>('/code/menu/list');
-    console.log(response);
+
     if (response.data.code === '200') {
       return response.data.result;
+    }
+  };
+  const signup = async (body: SignUpType) => {
+    const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/signup', body);
+    if (response.data.code === '200') {
+      alert('사용자 등록에 성공했습니다.');
+    }
+  };
+  const updateUser = async (body: UserUpdateType) => {
+    const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/update', body);
+    if (response.data.code === '200') {
+      alert('사용자 정보를 수정했습니다.');
     }
   };
   return {
@@ -171,6 +185,8 @@ const Api = () => {
     getRoomList,
     getUserList,
     getMenuList,
+    signup,
+    updateUser,
   };
 };
 

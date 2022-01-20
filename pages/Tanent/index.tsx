@@ -42,6 +42,7 @@ const ContractManagement = () => {
     if (!tenantData) return;
 
     setColumns([
+      { title: '담당업체', field: 'userName', type: 'string', align: 'center' },
       { title: '이름', field: 'userName', type: 'string', align: 'center' },
       { title: '휴대폰', field: 'phone', type: 'string', align: 'center' },
       { title: '지점', field: 'spotName', type: 'string', align: 'center' },

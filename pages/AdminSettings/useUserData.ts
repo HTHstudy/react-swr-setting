@@ -1,12 +1,12 @@
 import useSWR from 'swr';
-import { userInfoType } from '@typings/global';
+import { UserInfoType } from '@typings/global';
 import Api from '@utils/Api';
 
 export interface TableData {
   id: number;
   editing: any;
 }
-export interface userInfoRowdata extends userInfoType {
+export interface userInfoRowdata extends UserInfoType {
   tableData?: TableData;
 }
 

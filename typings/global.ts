@@ -118,16 +118,34 @@ export interface RoomType {
   roomName: string;
 }
 
-export interface userInfoType {
+export interface UserInfoType {
   compList: string;
   email: string;
   lastAccessDate: string;
   menuList: string;
   userId: number;
   userName: string;
+  phone: string;
 }
 
 export interface GetMenuListType {
   menuName: string;
   menuId: number;
+}
+
+export interface SignUpType {
+  email: string;
+  userName: string;
+  password: string;
+  phone: string;
+  menuList: number[];
+  compList: string[];
+}
+export interface UserUpdateType {
+  email: string;
+  userName: string;
+  password?: string;
+  phone?: string;
+  menuList: number[];
+  compList: string[];
 }

@@ -17,15 +17,16 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import HelpIcon from '@material-ui/icons/Help';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import HomeWorkIcon from '@material-ui/icons/HomeWork';
+import CreditCardIcon from '@material-ui/icons/CreditCard';
+import CodeIcon from '@material-ui/icons/Code';
+import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 
 import loadable from '@loadable/component';
-import { useMenuList, useToken } from '@store';
+import { useMenuList } from '@store';
 import Api from '@utils/Api';
 
 const CustomerService = loadable(() => import('@pages/CustomerService'));
@@ -37,10 +38,11 @@ const SpotManagement = loadable(() => import('@pages/SpotManagement'));
 const MENU_ICONS: { [s: string]: JSX.Element } = {
   spot: <HomeWorkIcon />,
   user: <SettingsIcon />,
-  consult: <HelpIcon />,
-  receipt: <MonetizationOnIcon />,
+  consult: <LiveHelpIcon />,
+  receipt: <CreditCardIcon />,
   tenant: <AssignmentIcon />,
   logout: <ExitToAppIcon />,
+  code: <CodeIcon />,
 };
 const PAGES: { [s: string]: JSX.Element } = {
   spot: <SpotManagement />,
@@ -48,6 +50,7 @@ const PAGES: { [s: string]: JSX.Element } = {
   consult: <CustomerService />,
   receipt: <Settlement />,
   tenant: <Tanent />,
+  code: <>코드관리</>,
 };
 
 const drawerWidth = 240;
@@ -56,7 +59,7 @@ const Workspace = () => {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(1);
+  const [selected, setSelected] = useState(0);
   const { menuList } = useMenuList();
 
   const API = Api();
@@ -95,7 +98,7 @@ const Workspace = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
-            {menuList && menuList[selected].menuName}
+            {menuList && menuList[selected]?.menuName}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -134,7 +137,7 @@ const Workspace = () => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        {menuList && PAGES[menuList[selected].menuUrl]}
+        {menuList && PAGES[menuList[selected]?.menuUrl]}
       </main>
     </div>
   );

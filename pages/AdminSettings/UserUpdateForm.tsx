@@ -9,29 +9,33 @@ import { Autocomplete } from '@material-ui/lab';
 import useUserData from './useUserData';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
+import { UserInfoType } from '@typings/global';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-type UserRegistFormProps = {
+type UserUpdateFormProps = {
+  rowData: UserInfoType;
   onClose: () => void;
 };
 
-export default function UserRegistForm({ onClose }: UserRegistFormProps) {
+export default function UserUpdateForm({ rowData, onClose }: UserUpdateFormProps) {
   const classes = useStyles();
   const { setUserData } = useUserData();
   const API = Api();
 
-  const [email, setEmail] = useState<string>('');
+  const [email, setEmail] = useState<string>(rowData.email);
   const [password, setPassword] = useState<string>('');
-  const [userName, setUserName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
+  const [userName, setUserName] = useState<string>(rowData.userName);
+  const [phone, setPhone] = useState<string>(rowData.phone ? rowData.phone : '');
 
   const [menuOptions, setMenuOptions] = useState<AutoCompleteOptionType<number>[]>();
-  const [compnayOptions, setCompanyOptions] = useState<AutoCompleteOptionType<string>[]>();
+  const [companyOptions, setCompanyOptions] = useState<AutoCompleteOptionType<string>[]>();
 
   const [menuValues, setMenuValues] = useState<AutoCompleteOptionType<number>[]>();
   const [companyValues, setCompanyValues] = useState<AutoCompleteOptionType<string>[]>();
+  const [defaultMenu, setDefaultMenu] = useState<AutoCompleteOptionType<number>[]>([]);
+  const [defaultComp, setDefaultComp] = useState<AutoCompleteOptionType<string>[]>([]);
 
   const getMenuOption = async () => {
     const menuList = await API.getMenuList();
@@ -39,6 +43,10 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
     const _options = menuList?.map((menu) => {
       return { value: menu.menuId, name: menu.menuName };
     });
+    if (rowData.menuList && _options) {
+      const _values = _options.filter((comp) => rowData.compList.includes(comp.name));
+      setDefaultMenu(_values);
+    }
     setMenuOptions(_options);
   };
   const getCompanyOption = async () => {
@@ -47,6 +55,10 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
     const _options = companyCodeList?.map((company) => {
       return { value: company.code, name: company.codeName };
     });
+    if (rowData.compList && _options) {
+      const _values = _options.filter((comp) => rowData.compList.includes(comp.name));
+      setDefaultComp(_values);
+    }
     setCompanyOptions(_options);
   };
 
@@ -65,21 +77,19 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
   }, []);
 
   const handleSubmit = async () => {
-    if (email && password && userName && phone && menuValues && companyValues) {
-      if (menuValues.length < 1 || companyValues.length < 1) {
-        alert('모든 칸을 입력 해주세요');
-        return;
-      }
+    const _menu = menuValues ? menuValues : defaultMenu;
+    const _comp = companyValues ? companyValues : defaultComp;
+    if (email && userName) {
       const body = {
         email,
         userName,
-        password,
-        phone,
-        menuList: menuValues.map((menu) => menu.value),
-        compList: companyValues.map((company) => company.value),
+        menuList: _menu.map((menu) => menu.value),
+        compList: _comp.map((company) => company.value),
+        ...(password && { password }),
+        ...(phone && { phone }),
       };
 
-      await API.signup(body);
+      await API.updateUser(body);
       setUserData();
       onClose();
     } else {
@@ -90,13 +100,14 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
   return (
     <div className={classes.root}>
       <div className={classes.titleGrid}>
-        <h1>관리자 생성</h1>
+        <h1>관리자 정보 수정</h1>
         <IconButton onClick={onClose} color="secondary" aria-label="close">
           <CloseIcon />
         </IconButton>
       </div>
       <div className={classes.myGrid}>
         <TextField
+          disabled
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           fullWidth
@@ -111,7 +122,6 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
           fullWidth
           label="비밀번호"
           variant="outlined"
-          required
         />
         <TextField
           value={userName}
@@ -142,6 +152,9 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
             options={menuOptions}
             disableCloseOnSelect
             getOptionLabel={(option) => option.name}
+            {...(rowData.menuList && {
+              defaultValue: menuOptions.filter((menu) => rowData.menuList.includes(menu.name)),
+            })}
             onChange={(event: any, newValue: any) => setMenuValues(newValue)}
             renderOption={(option, { selected }) => (
               <>
@@ -152,13 +165,16 @@ export default function UserRegistForm({ onClose }: UserRegistFormProps) {
             renderInput={(params) => <TextField {...params} variant="outlined" label="접근가능메뉴" />}
           />
         )}
-        {compnayOptions && (
+        {companyOptions && (
           <Autocomplete
             fullWidth
             multiple
-            options={compnayOptions}
+            options={companyOptions}
             disableCloseOnSelect
             getOptionLabel={(option) => option.name}
+            {...(rowData.compList && {
+              defaultValue: companyOptions.filter((comp) => rowData.compList.includes(comp.name)),
+            })}
             onChange={(event: any, newValue: any) => setCompanyValues(newValue)}
             renderOption={(option, { selected }) => (
               <>
