@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import MaterialTable, { Column } from 'material-table';
 import useConsultData, { ConsultRowdata } from './useConsultData';
 import Api from '@utils/Api';
+import { CircularProgress } from '@material-ui/core';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const CustomerService = () => {
+  const classes = useStyles();
   const [columns, setColumns] = useState<Column<ConsultRowdata>[]>();
   const { consultData, setConsultData } = useConsultData();
 
@@ -38,7 +41,7 @@ const CustomerService = () => {
 
   return (
     <div>
-      {consultData?.list && columns && (
+      {consultData?.list && columns ? (
         <MaterialTable
           title="문의 테이블"
           columns={columns}
@@ -84,9 +87,22 @@ const CustomerService = () => {
             addRowPosition: 'first',
           }}
         />
+      ) : (
+        <CircularProgress className={classes.center} size={100} />
       )}
     </div>
   );
 };
 
 export default CustomerService;
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    center: {
+      position: 'absolute',
+      top: `50%`,
+      left: `50%`,
+      transform: `translate(-50%, -50%)`,
+    },
+  }),
+);

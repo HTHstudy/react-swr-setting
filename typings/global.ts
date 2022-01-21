@@ -143,7 +143,7 @@ export interface SignUpType {
 }
 export interface UserUpdateType {
   email: string;
-  userName: string;
+  userName?: string;
   password?: string;
   phone?: string;
   menuList: number[];

@@ -34,6 +34,7 @@ const Tanent = loadable(() => import('@pages/Tanent'));
 const Settlement = loadable(() => import('@pages/Settlement'));
 const AdminSettings = loadable(() => import('@pages/AdminSettings'));
 const SpotManagement = loadable(() => import('@pages/SpotManagement'));
+const CodeManager = loadable(() => import('@pages/CodeManager'));
 
 const MENU_ICONS: { [s: string]: JSX.Element } = {
   spot: <HomeWorkIcon />,
@@ -50,7 +51,7 @@ const PAGES: { [s: string]: JSX.Element } = {
   consult: <CustomerService />,
   receipt: <Settlement />,
   tenant: <Tanent />,
-  code: <>코드관리</>,
+  code: <CodeManager />,
 };
 
 const drawerWidth = 240;

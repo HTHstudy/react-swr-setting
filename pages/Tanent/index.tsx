@@ -6,6 +6,7 @@ import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import TenantRegistForm from './TenantRegistForm';
 import TenantUpdateForm from './TenantUpdateForm';
 import { TenantType } from '@typings/global';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const ContractManagement = () => {
   const classes = useStyles();
@@ -75,7 +76,8 @@ const ContractManagement = () => {
           <TenantUpdateForm rowData={selectedData} onClose={handleClose2} />
         </Modal>
       )}
-      {tenantData && columns && (
+
+      {tenantData && columns ? (
         <MaterialTable
           title="계약 테이블"
           columns={columns}
@@ -99,6 +101,8 @@ const ContractManagement = () => {
             },
           ]}
         />
+      ) : (
+        <CircularProgress className={classes.center} size={100} />
       )}
     </div>
   );
@@ -111,6 +115,12 @@ const useStyles = makeStyles((theme: Theme) =>
     addTenant: {
       fontSize: 16,
       marginBottom: '16px',
+    },
+    center: {
+      position: 'absolute',
+      top: `50%`,
+      left: `50%`,
+      transform: `translate(-50%, -50%)`,
     },
   }),
 );

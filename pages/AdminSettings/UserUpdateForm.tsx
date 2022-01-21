@@ -82,7 +82,7 @@ export default function UserUpdateForm({ rowData, onClose }: UserUpdateFormProps
     if (email && userName) {
       const body = {
         email,
-        userName,
+        // userName,
         menuList: _menu.map((menu) => menu.value),
         compList: _comp.map((company) => company.value),
         ...(password && { password }),

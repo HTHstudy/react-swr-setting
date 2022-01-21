@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import {
   LoginType,
   ConsultType,
@@ -23,13 +23,13 @@ interface CustomResponse<ResultType> {
   result: ResultType;
 }
 
-const $axios = axios.create({
+export const $axios = axios.create({
   baseURL: process.env.API_URL,
 });
 
 const Api = () => {
-  const { setToken } = useToken();
-  const token = localStorage.getItem('token');
+  const { token, setToken } = useToken();
+
   if (token) $axios.defaults.headers.common['Authorization'] = token;
 
   const login = async (email: string, password: string) => {
@@ -161,9 +161,12 @@ const Api = () => {
   };
   const signup = async (body: SignUpType) => {
     const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/signup', body);
+    console.log(response);
     if (response.data.code === '200') {
       alert('사용자 등록에 성공했습니다.');
+      return;
     }
+    alert(response.data.message);
   };
   const updateUser = async (body: UserUpdateType) => {
     const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/update', body);
@@ -171,6 +174,16 @@ const Api = () => {
       alert('사용자 정보를 수정했습니다.');
     }
   };
+  const getAllCodeGroup = async () => {
+    const response = await $axios.get<CustomResponse<CodeType[]>>(`/cmm/code-group`);
+
+    if (response.data.code === '200') {
+      const codeGroupList = response.data.result.slice(1);
+      return codeGroupList;
+    }
+    alert(response.data.message);
+  };
+
   return {
     login,
     logout,
@@ -187,6 +200,7 @@ const Api = () => {
     getMenuList,
     signup,
     updateUser,
+    getAllCodeGroup,
   };
 };
 
