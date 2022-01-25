@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Api from '@utils/Api';
-import { useToken } from '@store';
 
 function Copyright() {
   return (
