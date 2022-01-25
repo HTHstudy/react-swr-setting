@@ -31,7 +31,7 @@ import Api from '@utils/Api';
 
 const CustomerService = loadable(() => import('@pages/CustomerService'));
 const Tanent = loadable(() => import('@pages/Tanent'));
-const Settlement = loadable(() => import('@pages/Settlement'));
+const Receipt = loadable(() => import('@pages/Receipt'));
 const AdminSettings = loadable(() => import('@pages/AdminSettings'));
 const SpotManagement = loadable(() => import('@pages/SpotManagement'));
 const CodeManager = loadable(() => import('@pages/CodeManager'));
@@ -49,7 +49,7 @@ const PAGES: { [s: string]: JSX.Element } = {
   spot: <SpotManagement />,
   user: <AdminSettings />,
   consult: <CustomerService />,
-  receipt: <Settlement />,
+  receipt: <Receipt />,
   tenant: <Tanent />,
   code: <CodeManager />,
 };
@@ -62,6 +62,9 @@ const Workspace = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(0);
   const { menuList } = useMenuList();
+
+  const userInfo = localStorage.getItem('userInfo');
+  // userInfo && console.log(JSON.parse(userInfo));
 
   const API = Api();
 
@@ -86,21 +89,28 @@ const Workspace = () => {
           [classes.appBarShift]: open,
         })}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            className={clsx(classes.menuButton, {
-              [classes.hide]: open,
-            })}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            {menuList && menuList[selected]?.menuName}
-          </Typography>
+        <Toolbar style={{ justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              className={clsx(classes.menuButton, {
+                [classes.hide]: open,
+              })}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h6" noWrap>
+              {menuList && menuList[selected]?.menuName}
+            </Typography>
+          </div>
+          {userInfo && (
+            <Typography variant="subtitle2" noWrap>
+              안녕하세요! {JSON.parse(userInfo).userName}님
+            </Typography>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer

@@ -30,7 +30,7 @@ export interface CodeType {
   code: string;
   codeName: string;
   codeGroup: string;
-  codeRemarks: string | null;
+  codeRemarks: string;
 }
 export interface RegistConsultType {
   wishSpot: string;
@@ -148,4 +148,14 @@ export interface UserUpdateType {
   phone?: string;
   menuList: number[];
   compList: string[];
+}
+export interface CodeRegistType {
+  codeGroup: string;
+  codeName: string;
+  codeRemarks?: string;
+}
+export interface CodeUpdateType {
+  code: string;
+  codeName: string;
+  codeRemarks?: string;
 }

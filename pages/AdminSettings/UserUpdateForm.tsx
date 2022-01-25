@@ -44,7 +44,7 @@ export default function UserUpdateForm({ rowData, onClose }: UserUpdateFormProps
       return { value: menu.menuId, name: menu.menuName };
     });
     if (rowData.menuList && _options) {
-      const _values = _options.filter((comp) => rowData.compList.includes(comp.name));
+      const _values = _options.filter((menu) => rowData.menuList.includes(menu.name));
       setDefaultMenu(_values);
     }
     setMenuOptions(_options);
@@ -82,12 +82,13 @@ export default function UserUpdateForm({ rowData, onClose }: UserUpdateFormProps
     if (email && userName) {
       const body = {
         email,
-        // userName,
+        userName,
         menuList: _menu.map((menu) => menu.value),
         compList: _comp.map((company) => company.value),
         ...(password && { password }),
         ...(phone && { phone }),
       };
+      console.log(body);
 
       await API.updateUser(body);
       setUserData();

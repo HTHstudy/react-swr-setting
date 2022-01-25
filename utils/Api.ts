@@ -14,6 +14,8 @@ import {
   GetMenuListType,
   SignUpType,
   UserUpdateType,
+  CodeRegistType,
+  CodeUpdateType,
 } from '@typings/global';
 import { useToken } from '@store';
 
@@ -40,6 +42,7 @@ const Api = () => {
       localStorage.setItem('token', result.token);
       localStorage.setItem('menuList', JSON.stringify(result.menuList));
       localStorage.setItem('companyList', JSON.stringify(result.companyList));
+      localStorage.setItem('userInfo', JSON.stringify(result.userInfo));
       setToken();
       return;
     }
@@ -161,7 +164,7 @@ const Api = () => {
   };
   const signup = async (body: SignUpType) => {
     const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/signup', body);
-    console.log(response);
+
     if (response.data.code === '200') {
       alert('사용자 등록에 성공했습니다.');
       return;
@@ -183,7 +186,51 @@ const Api = () => {
     }
     alert(response.data.message);
   };
+  const registCode = async (body: CodeRegistType) => {
+    const response = await $axios.post<CustomResponse<CodeType[]>>('/code/regist', body);
 
+    if (response.data.code === '200') {
+      alert('등록에 성공했습니다.');
+      return response.data.code;
+    }
+    alert(response.data.message);
+  };
+  const deleteCode = async (code: string) => {
+    const response = await $axios.post<CustomResponse<CodeType[]>>('/code/delete', { code });
+
+    if (response.data.code === '200') {
+      alert('코드를 정상적으로 삭제 했습니다.');
+      return;
+    }
+    alert(response.data.message);
+  };
+  const updateCode = async (body: CodeUpdateType) => {
+    const response = await $axios.post<CustomResponse<CodeType[]>>('/code/update', body);
+
+    if (response.data.code === '200') {
+      alert('코드를 수정 했습니다.');
+      return;
+    }
+    alert(response.data.message);
+  };
+  const getReceiptData = async () => {
+    const companyList = localStorage.getItem('companyList');
+    const response = await $axios.post<CustomResponse<any[]>>(
+      '/receipt/list',
+      {
+        // baseMonth: 0,
+        paymentYn: false,
+        companyList: companyList ? JSON.parse(companyList) : [null],
+      },
+      //   companyList ? { companyList: JSON.parse(companyList) } : { companyList: [null] },
+    );
+
+    // const valid = response.data.code === '200';
+
+    // if (valid) {
+    //   return response.data.result;
+    // }
+  };
   return {
     login,
     logout,
@@ -201,6 +248,10 @@ const Api = () => {
     signup,
     updateUser,
     getAllCodeGroup,
+    registCode,
+    deleteCode,
+    updateCode,
+    getReceiptData,
   };
 };
 

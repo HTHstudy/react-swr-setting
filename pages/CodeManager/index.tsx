@@ -1,116 +1,55 @@
-import {
-  Box,
-  CircularProgress,
-  Paper,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tabs,
-} from '@material-ui/core';
-import { CodeType } from '@typings/global';
-import Api from '@utils/Api';
-import MaterialTable, { Column } from 'material-table';
 import React, { useEffect, useState } from 'react';
-import useCodeGroup, { CodeGroupRowdata } from './useCodeGroup';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@material-ui/data-grid';
+import { Box, Tab, Tabs } from '@material-ui/core';
+import CodeTable from '@pages/CodeManager/CodeTable';
+import { CodeType } from '@typings/global';
+import useCodeGroup from './useCodeGroup';
+
+export interface CodeColumn {
+  id: 'code' | 'codeName' | 'codeGroup' | 'codeRemarks';
+  label: string;
+  minWidth?: number;
+  align?: 'right' | 'center';
+}
 
 const CodeManager = () => {
-  const classes = useStyles();
-  const [codeGroupList, setCodeGroupList] = useState<CodeType[]>();
-  const API = Api();
+  const { codeGroupList } = useCodeGroup();
+  const [tabIndex, setTabIndex] = useState(0);
+  const [columns, setColumns] = useState<CodeColumn[]>();
+  const [rows, setRows] = useState<CodeType[]>();
 
-  const [value, setValue] = useState(0);
-  // const [columns, setColumns] = useState<Column<CodeGroupRowdata>[]>();
-  const [columns, setColumns] = useState<GridColDef[]>();
-  const [codeList, setCodeList] = useState<CodeType[]>();
-
-  useEffect(() => {
-    API.getAllCodeGroup().then((res) => setCodeGroupList(res));
-  }, []);
   useEffect(() => {
     if (!codeGroupList) return;
     if (columns) return;
+
     setColumns([
-      { headerName: '코드', field: 'code', type: 'string', width: 200 },
-      { headerName: '코드명', field: 'codeName', type: 'string', width: 200 },
-      { headerName: '코드그룹', field: 'codeGroup', type: 'string', width: 200 },
-      { headerName: '비고', field: 'codeRemarks', type: 'string', width: 200 },
+      { id: 'code', label: '코드', minWidth: 170 },
+      { id: 'codeName', label: '코드명', minWidth: 170 },
+      { id: 'codeGroup', label: '코드그룹', minWidth: 170 },
+      { id: 'codeRemarks', label: '비고', minWidth: 170 },
     ]);
-    // setColumns([
-    //   { title: '코드', field: 'code', type: 'string' },
-    //   { title: '코드명', field: 'codeName', type: 'string' },
-    //   { title: '코드그룹', field: 'codeGroup', type: 'string' },
-    //   { title: '비고', field: 'codeRemarks', type: 'string' },
-    // ]);
   }, [codeGroupList]);
 
-  useEffect(() => {
-    if (!codeGroupList) return;
-    getListByCode(codeGroupList[value].code);
-  }, [value, codeGroupList]);
-
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    if (value == newValue) return;
-    setValue(newValue);
-    setCodeList(undefined);
+    if (tabIndex == newValue) return;
+    setRows(undefined);
+    setTabIndex(newValue);
   };
-
-  const getListByCode = async (codeCroup: string) => {
-    const codeList = await API.getCode(codeCroup);
-    if (codeList) {
-      const temp: any = codeList.slice();
-      codeList.forEach((code, index) => {
-        temp[index].id = index;
-      });
-    }
-
-    setCodeList(codeList);
-  };
-  // const [pageSize, setPageSize] = React.useState<number>(5);
+  useEffect(() => {}, [tabIndex]);
 
   return (
     <div>
-      코드관리123
       <Box>
-        <Tabs variant="fullWidth" value={value} onChange={handleChange} aria-label="simple tabs example">
-          {codeGroupList?.map((code, index) => (
-            <Tab style={{ backgroundColor: '#79DCE4' }} label={code.codeName} />
+        <Tabs variant="fullWidth" value={tabIndex} onChange={handleChange} aria-label="code tabs">
+          {codeGroupList?.map((code) => (
+            <Tab key={code.code} style={{ backgroundColor: '#cfe8fc' }} label={code.codeName} />
           ))}
         </Tabs>
-
-        <div style={{ height: 400, width: '100%' }}>
-          {columns && codeList && (
-            <DataGrid
-              rows={codeList}
-              columns={columns}
-              pageSize={5}
-              // checkboxSelection
-              disableSelectionOnClick
-            />
-          )}
-        </div>
+        {columns && codeGroupList && (
+          <CodeTable codeGroup={codeGroupList[tabIndex].code} columns={columns} rows={rows} setRows={setRows} />
+        )}
       </Box>
     </div>
   );
 };
 
 export default CodeManager;
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    center: {
-      position: 'absolute',
-      top: `50%`,
-      left: `50%`,
-      transform: `translate(-50%, -50%)`,
-    },
-    table: {
-      minWidth: 350,
-    },
-  }),
-);
