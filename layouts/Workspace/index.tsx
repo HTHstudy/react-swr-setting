@@ -64,7 +64,6 @@ const Workspace = () => {
   const { menuList } = useMenuList();
 
   const userInfo = localStorage.getItem('userInfo');
-  // userInfo && console.log(JSON.parse(userInfo));
 
   const API = Api();
 

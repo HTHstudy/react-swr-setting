@@ -94,7 +94,7 @@ export const Api = () => {
       const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/regist', newConsult);
 
       if (response.data.code === '200') alert('등록에 성공했습니다.');
-    },
+    }, 
     getConsultData: async () => {
       const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/list', null);
       const ConsultCodeList = await modules.getCode('CONSULT_STATUS');
