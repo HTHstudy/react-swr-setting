@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles';
 import {
@@ -62,10 +62,13 @@ const Workspace = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(0);
   const { menuList } = useMenuList();
+  const API = Api();
+
+  useEffect(() => {
+    API.checkToken();
+  });
 
   const userInfo = localStorage.getItem('userInfo');
-
-  const API = Api();
 
   const logoutHandler = () => {
     API.logout();

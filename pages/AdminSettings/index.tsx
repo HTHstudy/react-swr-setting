@@ -82,8 +82,8 @@ const AdminSettings = () => {
           columns={columns}
           data={userData}
           options={{
-            pageSize: 100,
-            pageSizeOptions: [10, 50, 100],
+            pageSize: 20,
+            pageSizeOptions: [10, 20, 50],
             search: true,
             addRowPosition: 'first',
             toolbarButtonAlignment: 'left',

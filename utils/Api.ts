@@ -34,7 +34,7 @@ export const Api = () => {
   if (token) $axios.defaults.headers.common['Authorization'] = token;
 
   const modules = {
-    login: async (email: string, password: string) => {
+    async login(email: string, password: string) {
       const response = await $axios.post<CustomResponse<LoginType>>('/user/signin', { email, password });
       const { result } = response.data;
 
@@ -48,12 +48,19 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    logout: async () => {
+    async logout() {
       localStorage.clear();
       setToken();
     },
+    async checkToken() {
+      const response = await $axios.get<CustomResponse<any>>('/cmm/check-token');
 
-    updateTenantData: async (body: TenantUpdateInput) => {
+      if (response.data.code === '441') {
+        alert(response.data.message);
+        modules.logout();
+      }
+    },
+    async updateTenantData(body: TenantUpdateInput) {
       const response = await $axios.post<CustomResponse<TenantType[]>>('/tenant/update', body);
 
       if (response.data.code === '200') {
@@ -62,7 +69,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    registTenantData: async (body: TenantInput) => {
+    async registTenantData(body: TenantInput) {
       const response = await $axios.post<CustomResponse<TenantType[]>>('/tenant/regist', body);
 
       if (response.data.code === '200') {
@@ -71,7 +78,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    getTenantData: async () => {
+    async getTenantData() {
       const companyList = localStorage.getItem('companyList');
       const response = await $axios.post<CustomResponse<TenantType[]>>(
         '/tenant/list',
@@ -85,25 +92,20 @@ export const Api = () => {
         return { list };
       }
     },
-    updateConsultData: async (newConsult: UpdateConsultType) => {
+    async updateConsultData(newConsult: UpdateConsultType) {
       const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/update', newConsult);
 
       if (response.data.code === '200') alert('수정에 성공했습니다.');
     },
-    registConsultData: async (newConsult: RegistConsultType) => {
+    async registConsultData(newConsult: RegistConsultType) {
       const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/regist', newConsult);
 
       if (response.data.code === '200') alert('등록에 성공했습니다.');
-    }, 
-    getConsultData: async () => {
+    },
+    async getConsultData() {
       const response = await $axios.post<CustomResponse<ConsultType[]>>('/consult/list', null);
       const ConsultCodeList = await modules.getCode('CONSULT_STATUS');
       const locationCodeList = await modules.getCode('LOCATION_CODE');
-
-      if (response.data.code === '441') {
-        alert('세션이 만료 되었습니다.');
-        modules.logout();
-      }
 
       const valid = response.data.code === '200' && locationCodeList && ConsultCodeList;
 
@@ -122,7 +124,7 @@ export const Api = () => {
         return { list, consultLookup, locationLookup };
       }
     },
-    getCode: async (code: string) => {
+    async getCode(code: string) {
       const response = await $axios.get<CustomResponse<CodeType[]>>(`/cmm/code-list/${code}`);
 
       if (response.data.code === '200') {
@@ -131,7 +133,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    getSpotList: async () => {
+    async getSpotList() {
       const response = await $axios.post<CustomResponse<SpotType[]>>('/spot/list');
 
       if (response.data.code === '200') {
@@ -140,7 +142,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    getRoomList: async (spotId: number) => {
+    async getRoomList(spotId: number) {
       const response = await $axios.post<CustomResponse<RoomType[]>>('/room/list', { spotId });
 
       if (response.data.code === '200') {
@@ -149,20 +151,20 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    getUserList: async () => {
+    async getUserList() {
       const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/list');
       if (response.data.code === '200') {
         return response.data.result;
       }
     },
-    getMenuList: async () => {
+    async getMenuList() {
       const response = await $axios.post<CustomResponse<GetMenuListType[]>>('/code/menu/list');
 
       if (response.data.code === '200') {
         return response.data.result;
       }
     },
-    signup: async (body: SignUpType) => {
+    async signup(body: SignUpType) {
       const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/signup', body);
 
       if (response.data.code === '200') {
@@ -171,13 +173,13 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    updateUser: async (body: UserUpdateType) => {
+    async updateUser(body: UserUpdateType) {
       const response = await $axios.post<CustomResponse<UserInfoType[]>>('/user/update', body);
       if (response.data.code === '200') {
         alert('사용자 정보를 수정했습니다.');
       }
     },
-    getAllCodeGroup: async () => {
+    async getAllCodeGroup() {
       const response = await $axios.get<CustomResponse<CodeType[]>>(`/cmm/code-group`);
 
       if (response.data.code === '200') {
@@ -186,7 +188,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    registCode: async (body: CodeRegistType) => {
+    async registCode(body: CodeRegistType) {
       const response = await $axios.post<CustomResponse<CodeType[]>>('/code/regist', body);
 
       if (response.data.code === '200') {
@@ -195,7 +197,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    deleteCode: async (code: string) => {
+    async deleteCode(code: string) {
       const response = await $axios.post<CustomResponse<CodeType[]>>('/code/delete', { code });
 
       if (response.data.code === '200') {
@@ -204,7 +206,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    updateCode: async (body: CodeUpdateType) => {
+    async updateCode(body: CodeUpdateType) {
       const response = await $axios.post<CustomResponse<CodeType[]>>('/code/update', body);
 
       if (response.data.code === '200') {
@@ -213,7 +215,7 @@ export const Api = () => {
       }
       alert(response.data.message);
     },
-    getReceiptData: async () => {
+    async getReceiptData() {
       const companyList = localStorage.getItem('companyList');
       const response = await $axios.post<CustomResponse<any[]>>(
         '/receipt/list',
