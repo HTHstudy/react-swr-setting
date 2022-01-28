@@ -64,9 +64,9 @@ const Workspace = () => {
   const { menuList } = useMenuList();
   const API = Api();
 
-  useEffect(() => {
-    API.checkToken();
-  });
+  // useEffect(() => {
+  //   API.checkToken();
+  // });
 
   const userInfo = localStorage.getItem('userInfo');
 
